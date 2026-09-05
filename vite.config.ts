@@ -1,26 +1,56 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
+
+// Plugin to ensure GitHub Pages SPA compatibility (generates 404.html and .nojekyll in dist)
+function githubPagesSpa(): Plugin {
+  return {
+    name: 'github-pages-spa-helper',
+    closeBundle() {
+      try {
+        const distDir = path.resolve(__dirname, 'dist');
+        const indexPath = path.join(distDir, 'index.html');
+        const notFoundPath = path.join(distDir, '404.html');
+        const noJekyllPath = path.join(distDir, '.nojekyll');
+
+        // Copy index.html to 404.html so direct URL reloads work seamlessly on GitHub Pages
+        if (fs.existsSync(indexPath)) {
+          fs.copyFileSync(indexPath, notFoundPath);
+        }
+
+        // Ensure .nojekyll exists to prevent GitHub Pages Jekyll engine from ignoring files
+        if (!fs.existsSync(noJekyllPath)) {
+          fs.writeFileSync(noJekyllPath, '');
+        }
+      } catch (err) {
+        console.warn('Warning: Could not create GitHub Pages fallback files:', err);
+      }
+    },
+  };
+}
 
 export default defineConfig(() => {
   // Determine base path for GitHub Pages or other hosts:
-  // 1. VITE_BASE_PATH if provided by CI
-  // 2. GitHub Actions environment: GITHUB_REPOSITORY="owner/repo-name" -> "/repo-name/"
-  // 3. Fallback to './' relative path
   let base = './';
-  if (process.env.VITE_BASE_PATH !== undefined) {
-    base = process.env.VITE_BASE_PATH
-      ? `${process.env.VITE_BASE_PATH}/`.replace(/\/+/g, '/')
-      : '/';
-  } else if (process.env.GITHUB_REPOSITORY) {
-    const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-    base = repoName && repoName.endsWith('.github.io') ? '/' : `/${repoName}/`;
+
+  // 1. Explicit VITE_BASE_PATH set in CI or env (e.g. "/satun-wildlife" or "/repo")
+  if (process.env.VITE_BASE_PATH && process.env.VITE_BASE_PATH.trim() !== '' && process.env.VITE_BASE_PATH !== '/') {
+    base = `${process.env.VITE_BASE_PATH}/`.replace(/\/+/g, '/');
+  }
+  // 2. Automatically detect GitHub Actions environment: GITHUB_REPOSITORY="owner/repo-name"
+  else if (process.env.GITHUB_REPOSITORY) {
+    const parts = process.env.GITHUB_REPOSITORY.split('/');
+    if (parts.length === 2) {
+      const [owner, repo] = parts;
+      base = repo && repo.toLowerCase() === `${owner.toLowerCase()}.github.io` ? '/' : `/${repo}/`;
+    }
   }
 
   return {
     base,
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), githubPagesSpa()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
