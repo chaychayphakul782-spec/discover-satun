@@ -1,0 +1,6 @@
+{
+  "name": "Discover Satun Wildlife",
+  "description": "สารานุกรมและฐานข้อมูลความหลากหลายทางชีวภาพ สัตว์ป่า และระบบนิเวศแห่งอุทยานธรณีโลกสตูล (Satun UNESCO Global Geopark)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
