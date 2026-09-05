@@ -1,6 +1,7 @@
 // ==========================================
 // SCSS Components & Interactive Enhancements
 // ==========================================
+@use 'sass:color';
 @use 'variables' as *;
 @use 'mixins' as *;
 
@@ -82,7 +83,7 @@
   background: linear-gradient(
     90deg,
     $satun-surface-alt 25%,
-    lighten($satun-surface-alt, 4%) 37%,
+    #fafaf7 37%,
     $satun-surface-alt 63%
   );
   background-size: 400% 100%;

@@ -4,10 +4,38 @@
 
 ---
 
+## 🚨 สาเหตุที่ GitHub Pages "ขึ้นหน้าขาว" (Blank Page) และวิธีแก้ไข
+
+หากเปิดลิงก์ GitHub Pages แล้วพบเป็นหน้าขาว มักเกิดจาก **2 สาเหตุหลัก** ดังนี้:
+
+### สาเหตุที่ 1: GitHub Pages ตั้งค่า Source เป็น `Deploy from a branch` (main / root)
+- **ปัญหา**: เมื่อ GitHub Pages ถูกตั้งให้ดึงไฟล์จากกิ่ง `main` โฟลเดอร์ `/` (Root) โดยตรง GitHub จะเปิดไฟล์ `index.html` ของ Source Code ซึ่งมีคำสั่งเรียก `/src/main.tsx` โดยที่เบราว์เซอร์ไม่สามารถรันโค้ด TypeScript JSX ได้ ส่งผลให้หน้าจอขาวสนิท
+- **วิธีแก้ที่ 1 (แนะนำ - อัตโนมัติ)**:
+  1. เข้าไปที่หน้า Repository บน GitHub
+  2. ไปที่ **Settings** > **Pages**
+  3. ในหัวข้อ **Build and deployment** > ช่อง **Source**: เปลี่ยนจาก `Deploy from a branch` เป็น **`GitHub Actions`**
+  4. ไฟล์ `.github/workflows/deploy.yml` จะทำการ `npm run build` แปลงโค้ดเป็น Production Bundle ในโฟลเดอร์ `dist/` แล้ว Deploy ขึ้นอัตโนมัติ 100%
+- **วิธีแก้ที่ 2 (ใช้คำสั่ง deploy สู่กิ่ง `gh-pages`)**:
+  - โปรเจกต์ได้ติดตั้ง `gh-pages` ไว้ให้แล้ว คุณสามารถรันคำสั่ง:
+    ```bash
+    npm run deploy
+    ```
+  - คำสั่งนี้จะ build และ push เฉพาะโฟลเดอร์ `dist` ไปยังกิ่ง `gh-pages` จากนั้นในหน้า Settings > Pages ให้เลือก Source เป็น `Deploy from a branch` และเลือกกิ่ง **`gh-pages`** / `(root)`
+
+---
+
+### สาเหตุที่ 2: Base Path URL ของ Assets ผิดเพี้ยน
+- **ปัญหา**: GitHub Pages จะมี URL ประจำโปรเจกต์เป็น `https://<username>.github.io/<repository-name>/` หากไม่ได้ตั้งค่า Base Path เบราว์เซอร์จะไปตามหาไฟล์ JavaScript/CSS ที่ root `https://<username>.github.io/assets/...` ทำให้เกิด 404 Not Found และหน้าขาว
+- **การแก้ไขในโค้ด**:
+  - ได้อัปเดต `vite.config.ts` ให้ตรวจจับชื่อ Repository จาก GitHub Actions อัตโนมัติ (`process.env.GITHUB_REPOSITORY` หรือ `VITE_BASE_PATH`) และ fallback เป็น `./` ให้เรียบร้อยแล้ว
+  - ปรับปรุง `.github/workflows/deploy.yml` ให้ส่ง Path ของ Repository ให้ Vite คอมไพล์ได้ถูกต้องแม่นยำ
+
+---
+
 ## 🚀 คำสั่งเริ่มต้นใช้งาน (Local Development)
 
 ```bash
-# 1. ติดตั้ง Dependencies (รวมถึง sass/scss)
+# 1. ติดตั้ง Dependencies (รวมถึง sass/scss และ gh-pages)
 npm install
 
 # 2. เริ่มต้นเซิร์ฟเวอร์จำลองการทำงาน
@@ -21,6 +49,9 @@ npm run build
 
 # 5. ทดสอบพรีวิวผลงานที่ Build แล้ว
 npm run preview
+
+# 6. (ทางเลือก) สั่ง Deploy ตรงสู่กิ่ง gh-pages
+npm run deploy
 ```
 
 ---
@@ -62,15 +93,13 @@ src/styles/
 4. เมื่อสำเร็จ ลิงก์เว็บไซต์จะปรากฏในแท็บ Pages เช่น:
    `https://<YOUR_USERNAME>.github.io/<YOUR_REPOSITORY>/`
 
-*(หมายเหตุ: ใน `vite.config.ts` ได้กำหนด `base: './'` ไว้เรียบร้อยแล้ว ทำให้ Path ของไฟล์รูปภาพ JS และ CSS ทำงานได้อย่างสมบูรณ์แบบบน GitHub Pages ทุก Subpath)*
-
 ---
 
 ## ☁️ ตัวเลือกการนำขึ้นคลาวด์อื่น ๆ (Alternative Cloud Hosting)
 
 ### 1. Vercel
 - มีไฟล์ `vercel.json` รวมอยู่ในโปรเจกต์แล้ว
-- เพียงเชื่อมต่อ GitHub Repository กับ Vercel:
+- เชื่อมต่อ GitHub Repository กับ Vercel:
   - **Framework Preset**: `Vite`
   - **Build Command**: `npm run build`
   - **Output Directory**: `dist`
@@ -96,7 +125,8 @@ src/styles/
 │       └── deploy.yml    # GitHub Actions workflow สำหรับ Deploy ขึ้น GitHub Pages
 ├── index.html            # HTML Entry point
 ├── package.json          # Vite + React + SCSS dependencies
-├── vite.config.ts        # การตั้งค่า Vite (base: './', SCSS, Tailwind)
+├── package-lock.json     # Lockfile สำหรับ GitHub Actions CI
+├── vite.config.ts        # การตั้งค่า Vite (Dynamic base URL, SCSS, Tailwind)
 ├── tsconfig.json         # TypeScript configuration
 ├── vercel.json           # Vercel SPA routing
 ├── netlify.toml          # Netlify build & rewrite configuration

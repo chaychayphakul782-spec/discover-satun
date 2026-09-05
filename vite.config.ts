@@ -4,8 +4,22 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
+  // Determine base path for GitHub Pages or other hosts:
+  // 1. VITE_BASE_PATH if provided by CI
+  // 2. GitHub Actions environment: GITHUB_REPOSITORY="owner/repo-name" -> "/repo-name/"
+  // 3. Fallback to './' relative path
+  let base = './';
+  if (process.env.VITE_BASE_PATH !== undefined) {
+    base = process.env.VITE_BASE_PATH
+      ? `${process.env.VITE_BASE_PATH}/`.replace(/\/+/g, '/')
+      : '/';
+  } else if (process.env.GITHUB_REPOSITORY) {
+    const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
+    base = repoName && repoName.endsWith('.github.io') ? '/' : `/${repoName}/`;
+  }
+
   return {
-    base: './',
+    base,
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
