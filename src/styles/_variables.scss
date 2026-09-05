@@ -1,0 +1,50 @@
+// ==========================================
+// SCSS Variables - Satun Wildlife Biosphere
+// ==========================================
+
+// Primary Palette
+$satun-emerald: #0f382c;
+$satun-emerald-dark: #002218;
+$satun-teal: #006972;
+$satun-teal-light: #9ef0fb;
+$satun-sand: #f9f9f6;
+$satun-surface: #ffffff;
+$satun-surface-alt: #f4f4f0;
+$satun-border: #e2e3df;
+$satun-border-subtle: #c1c8c3;
+
+// Text Colors
+$satun-text-primary: #1a1c1a;
+$satun-text-muted: #414845;
+$satun-text-secondary: #717975;
+
+// Conservation Status Colors (IUCN & Thai Wildlife Law)
+$status-reserved-bg: #fbece3;
+$status-reserved-text: #8a3816;
+$status-endangered-bg: #fbece3;
+$status-endangered-text: #8a3816;
+$status-vulnerable-bg: #faf3eb;
+$status-vulnerable-text: #7c5528;
+$status-least-concern-bg: #e8f1ed;
+$status-least-concern-text: #0f382c;
+
+// Emergency / Alert
+$alert-red: #ba1a1a;
+$alert-red-bg: #ffdad6;
+
+// Typography
+$font-serif: 'Noto Serif', 'Noto Sans Thai', Georgia, serif;
+$font-sans: 'Manrope', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+
+// Radii & Shadows
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+$shadow-soft: 0 4px 16px -2px rgba(0, 34, 24, 0.06);
+$shadow-hover: 0 10px 24px -4px rgba(0, 34, 24, 0.12);
+
+// Transitions
+$transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);

@@ -1,0 +1,31 @@
+// ==========================================
+// Main SCSS Entry Point - Discover Satun
+// ==========================================
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'components' as *;
+
+// Ensure base fonts & smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @include custom-scrollbar;
+  background-color: $satun-sand;
+  color: $satun-text-primary;
+  font-family: $font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Typography Utility Classes
+.font-display-serif {
+  font-family: $font-serif;
+  letter-spacing: -0.015em;
+}
+
+.font-species-scientific {
+  font-family: $font-serif;
+  font-style: italic;
+}

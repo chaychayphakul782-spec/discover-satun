@@ -1,0 +1,90 @@
+// ==========================================
+// SCSS Components & Interactive Enhancements
+// ==========================================
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.satun-card {
+  @include card-lift;
+  background-color: $satun-surface;
+  border: 1px solid $satun-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.satun-glass-pill {
+  @include glass-panel(0.65, 8px);
+  border-radius: $radius-full;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.satun-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--reserved {
+    background-color: $status-reserved-bg;
+    color: $status-reserved-text;
+    border: 1px solid rgba($status-reserved-text, 0.2);
+  }
+
+  &--vulnerable {
+    background-color: $status-vulnerable-bg;
+    color: $status-vulnerable-text;
+    border: 1px solid rgba($status-vulnerable-text, 0.2);
+  }
+
+  &--monitored {
+    background-color: $status-least-concern-bg;
+    color: $status-least-concern-text;
+    border: 1px solid rgba($status-least-concern-text, 0.2);
+  }
+}
+
+// Pulse animation for field alerts
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s infinite ease-in-out;
+}
+
+// Shimmer placeholder effect
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.satun-skeleton {
+  background: linear-gradient(
+    90deg,
+    $satun-surface-alt 25%,
+    lighten($satun-surface-alt, 4%) 37%,
+    $satun-surface-alt 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.8s ease infinite;
+}
